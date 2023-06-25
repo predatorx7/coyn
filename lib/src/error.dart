@@ -1,0 +1,1 @@
+class InvalidBlockchainIntegrityError extends Error {}
