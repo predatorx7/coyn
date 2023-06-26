@@ -1,23 +1,21 @@
 name: coyn
 description: A sample command-line application.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/predatorx7/coyn.git
 
 environment:
-  sdk: ^3.0.3
+  sdk: ^3.0.0
 
-# Add regular dependencies here.
 dependencies:
-  angel3_framework: ^8.0.0
-  angel3_graphql: ^8.0.0
+  collection: ^1.17.2
   crypto: ^3.0.3
-  graphql_schema2: ^6.0.0
-  graphql_server2: ^6.0.0
   http: ^1.0.0
   logging: ^1.2.0
   meta: ^1.9.1
   path: ^1.8.3
-  # path: ^1.8.0
+  pointycastle: ^3.7.3
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
 
 dev_dependencies:
   lints: ^2.0.0

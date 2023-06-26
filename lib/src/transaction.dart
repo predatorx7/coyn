@@ -3,11 +3,11 @@ class Transaction {
   final String recipient;
   final int quantity;
 
-  const Transaction(
-    this.sender,
-    this.recipient,
-    this.quantity,
-  );
+  const Transaction({
+    required this.sender,
+    required this.recipient,
+    required this.quantity,
+  });
 
   static Transaction? maybeFromJson(Map<String, Object?>? json) {
     if (json == null) return null;
@@ -16,9 +16,9 @@ class Transaction {
 
   factory Transaction.fromJson(Map<String, Object?> json) {
     return Transaction(
-      json['sender'] as String,
-      json['recipient'] as String,
-      json['quantity'] as int,
+      sender: json['sender'] as String,
+      recipient: json['recipient'] as String,
+      quantity: json['quantity'] as int,
     );
   }
 

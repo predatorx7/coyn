@@ -1,40 +1,47 @@
+import 'package:collection/collection.dart';
 import 'package:coyn/src/transaction.dart';
 
+import 'metadata.dart';
+
+final Equality _listEquality = DeepCollectionEquality();
+
 class BlockData {
-  final Transaction? transaction;
-  final String message;
+  final List<Transaction?>? transactions;
+  final BlockMetadata? metadata;
 
   const BlockData({
-    this.transaction,
-    required this.message,
+    this.transactions = const [],
+    this.metadata,
   });
 
   factory BlockData.fromJson(Map<String, Object?> json) {
     return BlockData(
-      transaction: Transaction.maybeFromJson(
-        json['transaction'] as Map<String, Object?>?,
-      ),
-      message: json['message'] as String,
+      transactions: (json['transaction'] as List<dynamic>?)
+          ?.cast<Map<String, Object?>>()
+          .map(Transaction.fromJson)
+          .toList(),
+      metadata: BlockMetadata.maybeFromJson(
+          json['metadata'] as Map<String, Object?>?),
     );
   }
 
   Map<String, Object?> toJson() {
     return {
-      'transaction': transaction?.toJson(),
-      'message': message,
+      'transaction': transactions?.map((e) => e?.toJson()).toList(),
+      'metadata': metadata,
     };
   }
 
   @override
   bool operator ==(Object other) {
     return other is BlockData &&
-        other.transaction == transaction &&
-        other.message == message;
+        _listEquality.equals(other.transactions, transactions) &&
+        other.metadata == metadata;
   }
 
   @override
   int get hashCode => Object.hashAll([
-        transaction,
-        message,
+        transactions,
+        metadata,
       ]);
 }

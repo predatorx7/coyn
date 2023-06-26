@@ -1,3 +1,4 @@
+import 'package:coyn/src/metadata.dart';
 import 'package:meta/meta.dart';
 
 import 'block.dart';
@@ -17,8 +18,10 @@ class Blockchain {
     return Block.generate(
       0,
       DateTime.parse('2023-06-25T20:28:37.688Z'),
-      BlockData(
-        message: 'first block on the chain',
+      const BlockData(
+        metadata: BlockMetadata(
+          message: 'first block on the chain',
+        ),
       ),
       '0',
     );
@@ -32,7 +35,7 @@ class Blockchain {
     final last = getTheLatestBlock();
     final previousHash = last.hash;
     final block = Block.generate(
-      requirement.index,
+      last.index + 1,
       requirement.timestamp,
       requirement.data,
       previousHash,
@@ -54,8 +57,22 @@ class Blockchain {
     return true;
   }
 
-  factory Blockchain.fromJson(List<Map<String, Object?>> json) {
-    final data = json.map(Block.fromJson).toList();
+  Block? getInvalidBlockSync() {
+    for (var i = 1; i < blockchain.length; i++) {
+      final currentBlock = blockchain[i];
+      final previousBlock = blockchain[i - 1];
+      if (!currentBlock.isHashValid()) {
+        return currentBlock;
+      }
+      if (currentBlock.previousHash != previousBlock.hash) {
+        return currentBlock;
+      }
+    }
+    return null;
+  }
+
+  factory Blockchain.fromJson(List<dynamic> json) {
+    final data = json.cast<Map<String, Object?>>().map(Block.fromJson).toList();
     return Blockchain(data);
   }
 

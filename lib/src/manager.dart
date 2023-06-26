@@ -7,7 +7,7 @@ import 'blockchain.dart';
 
 class BlockchainManager {
   Blockchain fromJsonString(String jsonString) {
-    List<Map<String, Object?>> data;
+    dynamic data;
     try {
       data = json.decode(jsonString);
     } on FormatException {
@@ -15,14 +15,14 @@ class BlockchainManager {
     }
     final blockchain = Blockchain.fromJson(data);
     if (!blockchain.isChainIntegrityValidSync()) {
-      throw InvalidBlockchainIntegrityError();
+      throw InvalidBlockchainIntegrityError(blockchain.getTheLatestBlock());
     }
     return blockchain;
   }
 
   String toJsonString(Blockchain blockchain) {
     if (!blockchain.isChainIntegrityValidSync()) {
-      throw InvalidBlockchainIntegrityError();
+      throw InvalidBlockchainIntegrityError(blockchain.getTheLatestBlock());
     }
     final data = blockchain.toJson();
     final jsonString = json.encode(data);

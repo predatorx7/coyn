@@ -1,26 +1,24 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import "package:pointycastle/export.dart" as pointycastle;
 
 import 'data.dart';
 
 class BlockRequirement {
-  final int index;
   final DateTime timestamp;
   final BlockData data;
 
   const BlockRequirement(
-    this.index,
     this.timestamp,
     this.data,
   );
 
   factory BlockRequirement.create(
-    int index,
     BlockData data,
   ) {
     return BlockRequirement(
-      index,
       DateTime.now(),
       data,
     );
@@ -28,7 +26,6 @@ class BlockRequirement {
 
   factory BlockRequirement.fromJson(Map<String, Object?> json) {
     return BlockRequirement(
-      json['index'] as int,
       DateTime.parse(json['timestamp'] as String),
       BlockData.fromJson(json['data'] as Map<String, Object?>),
     );
@@ -36,7 +33,6 @@ class BlockRequirement {
 
   Map<String, Object?> toJson() {
     return {
-      'index': index,
       'timestamp': timestamp.toIso8601String(),
       'data': data.toJson(),
     };
@@ -44,22 +40,17 @@ class BlockRequirement {
 
   @override
   bool operator ==(Object other) {
-    return other is Block &&
-        other.index == index &&
-        other.timestamp == timestamp &&
-        other.data == data;
+    return other is Block && other.timestamp == timestamp && other.data == data;
   }
 
   @override
   int get hashCode => Object.hashAll([
-        index,
         timestamp,
         data,
       ]);
 }
 
 class Block implements BlockRequirement {
-  @override
   final int index;
   @override
   final DateTime timestamp;
@@ -147,7 +138,15 @@ class Block implements BlockRequirement {
     buffer.write(timestamp.toIso8601String());
     buffer.write(previousHash);
     buffer.write(json.encode(data));
-    final bytes = utf8.encode(buffer.toString());
-    return sha256.convert(bytes).toString();
+    final bytes = utf8.encode(buffer.toString()) as Uint8List;
+    final digest = sha256Digest(bytes);
+    return digest.toString();
   }
+}
+
+Digest sha256Digest(Uint8List dataToDigest) {
+  final d = pointycastle.SHA256Digest();
+
+  final digest = d.process(dataToDigest);
+  return Digest(digest);
 }
